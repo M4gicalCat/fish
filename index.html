@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Fish</title>
-    <style>
-        body{background-color: #333333}
-        *{margin: 0;padding:0;}
-        canvas{width:100vw;height:100vh;position:absolute;top:0;left:0;}
-        #options{position:absolute;top:0;right:0;z-index:2;display:flex;flex-direction:column;align-items:center;background-color:#77777777;padding:.7rem;color:white}
-    </style>
+    <link href="index.css" type="text/css" rel="stylesheet">
     <script type="module" src="index.js"></script>
 </head>
 <body>
@@ -20,6 +15,28 @@
     <input type="range" min="0" max="360" id="angle" value="0">
     <label for="force">force</label>
     <input type="range" min="0" max="6" id="force" value="0">
+    <button id="show_buttons">show buttons</button>
+</div>
+<div id="button_bar" style="visibility: hidden">
+    <button id="btn_help"><img alt="help" src="img/help.png"></button>
+    <button id="btn_current"><img alt="[C]" src="img/current.png"></button>
+    <button id="btn_clear"><img alt="[RMB]" src="img/clear.png"></button>
+    <button id="btn_rerun"><img alt="[P]" src="img/rerun.png"></button>
+</div>
+<div id="help" style="visibility: hidden">
+    <h3>Main Infos</h3>
+    <div>
+        The fishes wander around with only one goal: not to collide with each other.
+        You can play with the current to make them deviate while they're inside it
+    </div>
+    <h3>Commands</h3>
+    <div id="help_commands">
+        <strong>[C]</strong><span> - show or hide the current</span>
+        <strong>[P]</strong><span> - reset and restart the simulation</span>
+        <strong>[RMB]</strong><span> - clear the current</span>
+        <strong>[LMB]</strong><span> - add a point to the current</span>
+    </div>
+    <div id="copyright"><small>© - Philippe FAISANDIER 2024 - <span id="now">2024</span></small></div>
 </div>
 </body>
 </html>

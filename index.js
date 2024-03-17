@@ -1,6 +1,10 @@
 import { PARAMS } from './params.js';
 import { generateFishes, updatePosition } from './2D.js';
 import { current, isInCurrent } from './current2D.js';
+import isMobile from './isMobile.js';
+
+let buttonsShown = false;
+let helpShown = false;
 
 document.getElementById('options').addEventListener('click', e => e.stopPropagation());
 document
@@ -9,6 +13,21 @@ document
 document
 	.getElementById('angle')
 	.addEventListener('input', e => (current.orientation = (+e.target.value / 180) * Math.PI));
+document.getElementById('show_buttons').addEventListener('click', toggleButtons);
+document.getElementById('btn_current').addEventListener('click', () => onKeyDown({ key: 'c' }));
+document.getElementById('btn_rerun').addEventListener('click', () => onKeyDown({ key: 'p' }));
+document.getElementById('btn_clear').addEventListener('click', onRightClick);
+document.getElementById('btn_help').addEventListener('click', () => onKeyDown({ key: 'h' }));
+document.getElementById('now').innerText = '' + new Date().getFullYear();
+function toggleHelp() {
+	document.getElementById('help').style.visibility = helpShown ? 'hidden' : 'visible';
+	helpShown = !helpShown;
+}
+
+function toggleButtons() {
+	if (buttonsShown) hideButtons();
+	else showButtons();
+}
 
 const drawFunctions = new Map();
 /**
@@ -29,10 +48,13 @@ let customResize;
 
 function onRightClick() {
 	current.clear();
+	if (buttonsShown) document.getElementById('btn_clear').focus();
 }
 
 function onLeftClick(e) {
+	e.preventDefault();
 	current.addPoint(e.clientX, e.clientY);
+	drawFunctions.set('current', drawCurrent);
 }
 
 function resize() {
@@ -42,6 +64,20 @@ function resize() {
 	}
 	customResize?.();
 	current.update();
+}
+
+if (isMobile) showButtons();
+
+function showButtons() {
+	buttonsShown = true;
+	document.getElementById('show_buttons').innerText = 'hide buttons';
+	document.getElementById('button_bar').style.visibility = 'visible';
+}
+
+function hideButtons() {
+	buttonsShown = false;
+	document.getElementById('show_buttons').innerText = 'show buttons';
+	document.getElementById('button_bar').style.visibility = 'hidden';
 }
 
 window.addEventListener('resize', resize);
@@ -119,10 +155,16 @@ const onKeyDown = e =>
 	({
 		p() {
 			if (PARAMS.DIMENSION === '2D') main2d();
+			if (buttonsShown) document.getElementById('btn_rerun').focus();
 		},
 		c() {
 			if (drawFunctions.has('current')) drawFunctions.delete('current');
 			else drawFunctions.set('current', drawCurrent);
+			if (buttonsShown) document.getElementById('btn_current').focus();
+		},
+		h() {
+			toggleHelp();
+			if (buttonsShown) document.getElementById('btn_help').focus();
 		},
 	})[e.key]?.();
 
