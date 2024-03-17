@@ -17,3 +17,8 @@ git clone https://github.com/M4gicalCat/fish.git
 
 # Settings
 Have fun tweaking the params in `params.js`, you might get specific behaviours using different settings.
+
+
+## NEXT STEPS
+- support for multiple currents
+- 3D version maybe ?
