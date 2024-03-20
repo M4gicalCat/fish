@@ -1,7 +1,18 @@
 import { PARAMS } from './params.js';
 
 export function generateFishes(n) {
-	return new Array(n).fill(0).map(() => {
+	/**
+	 * @type {Record<number, Record<number, any[]>>}
+	 */
+	const fishGrid = {};
+	const fishes = [];
+	for (let x = 0; x < window.innerWidth / PARAMS.MAX_VISION_DISTANCE; x++) {
+		fishGrid[x] = {};
+		for (let y = 0; y < window.innerHeight / PARAMS.MAX_VISION_DISTANCE; y++) {
+			fishGrid[x][y] = [];
+		}
+	}
+	for (let i = 0; i < n; i++) {
 		const fish = {
 			id: `_${window.crypto.getRandomValues(new Uint32Array(1))[0]}`,
 			position: { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight },
@@ -10,10 +21,16 @@ export function generateFishes(n) {
 			distances: {},
 			color: `rgb(${Math.floor(Math.random() * 200 + 56)},${Math.floor(Math.random() * 200 + 56)},${Math.floor(Math.random() * 200 + 56)})`,
 		};
+		// set its next position for later purposes, and its trajectory
 		fish.nextPosition = { ...fish.position };
 		fish.trajectory = getFishFunction(fish);
-		return fish;
-	});
+		// put it inside the grid
+		fishGrid[Math.floor(fish.position.x / PARAMS.MAX_VISION_DISTANCE)][
+			Math.floor(fish.position.y / PARAMS.MAX_VISION_DISTANCE)
+		].push(fish);
+		fishes.push(fish);
+	}
+	return { fishGrid, fishes };
 }
 
 function getFishFunction(fish) {

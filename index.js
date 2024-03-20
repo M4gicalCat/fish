@@ -92,17 +92,28 @@ const interactiveCtx = interactiveCanvas.getContext('2d');
 
 const main2d = () => {
 	const ctx = canvas.getContext('2d');
-
-	let fishes = generateFishes(PARAMS.NB_FISH);
-	(customResize = () => {
+	let { fishGrid, fishes } = generateFishes(PARAMS.NB_FISH);
+	(customResize = (initial = false) => {
 		ctx.fillStyle = '#444444';
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	})();
+		// restart the simulation to prevent bugs
+		if (!initial) onKeyDown({ key: 'p' });
+	})(true);
 
 	function drawFishes() {
 		ctx.fillStyle = '#22222222';
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		fishes = fishes.map(fish => {
+			const arrays = [];
+			const roundX = Math.floor(fish.position.x / PARAMS.MAX_VISION_DISTANCE);
+			const roundY = Math.floor(fish.position.y / PARAMS.MAX_VISION_DISTANCE);
+			for (let x = 0; x < 3; x++) {
+				for (let y = 0; y < 3; y++) {
+					arrays.push(fishGrid[x + roundX]?.[y + roundY] ?? []);
+				}
+			}
+			const thisArr = fishGrid[roundX][roundY];
+			thisArr.splice(thisArr.indexOf(fish), 1);
 			ctx.save();
 			ctx.fillStyle = fish.color;
 			ctx.translate(fish.position.x - 5, fish.position.y - 2);
@@ -110,9 +121,9 @@ const main2d = () => {
 			ctx.fillRect(0, 0, 10, 4);
 			ctx.restore();
 			const inside = isInCurrent(fish.position);
-			return updatePosition(
+			const newFish = updatePosition(
 				fish,
-				fishes.filter(f => {
+				arrays.flat().filter(f => {
 					if (fish === f) return false;
 					const distanceToFish = Math.sqrt(
 						(fish.position.x - f.position.x) ** 2 + (fish.position.y - f.position.y) ** 2,
@@ -122,6 +133,10 @@ const main2d = () => {
 				}),
 				inside ? current : undefined,
 			);
+			fishGrid[Math.floor(newFish.position.x / PARAMS.MAX_VISION_DISTANCE)][
+				Math.floor(newFish.position.y / PARAMS.MAX_VISION_DISTANCE)
+			].push(newFish);
+			return newFish;
 		});
 	}
 
