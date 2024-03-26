@@ -34,7 +34,7 @@ export function generateFishes(n) {
 }
 
 function getFishFunction(fish) {
-	const a = (fish.nextPosition.x - fish.position.x) / (fish.nextPosition.y - fish.position.y) || 0;
+	const a = (fish.nextPosition.x - fish.position.x) / (fish.nextPosition.y - fish.position.y || 1);
 	const b = -a * fish.position.x + fish.position.y;
 	return { a, b };
 }
